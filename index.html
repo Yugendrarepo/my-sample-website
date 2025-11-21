@@ -1,40 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My DevOps CI/CD Website</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        .container {
-            background: #ffffff;
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        h2 {
-            color: #555;
-            margin-top: 25px;
-        }
-        .step {
-            padding: 10px;
-            background: #eef;
-            border-left: 4px solid #77f;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Sample Project — Jenkins + Webhook + Docker</title>
+  <style>
+    :root{
+      --bg1: #0f172a;
+      --bg2: #0b1220;
+      --accent: #7c3aed;
+      --accent-2: #06b6d4;
+      --card: rgba(255,255,255,0.06);
+      --glass: rgba(255,255,255,0.04);
+      --muted: rgba(255,255,255,0.75);
+      --mono: "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:36px auto;
+      padding:28px;
+    }
+    header{
+      display:flex;
+      gap:20px;
+      align-items:center;
+      margin-bottom:20px;
+    }
+    .logo{
+      width:72px;
+      height:72px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      color:white;
+      box-shadow:0 8px 30px rgba(12,12,40,0.6);
+      flex-shrink:0;
+    }
+    h1{font-size:28px;margin:0}
+    p.lead{margin:6px 0 0;color:var(--muted);font-size:14px}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:22px;
+      margin-top:20px;
+    }
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr; padding-bottom:30px}
+    }
+
+    /* main card */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:22px;
+      border-radius:12px;
+      box-shadow:0 8px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .hero{
+      display:flex;
+      align-items:flex-start;
+      gap:18px;
+    }
+    .badge{
+      background:var(--glass);
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:600;
+      font-size:13px;
+      color: #dbeafe;
+    }
+
+    .steps{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+    .step{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:12px;
+      border-radius:10px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent);
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .step .num{
+      width:40px;height:40px;border-radius:8px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:white;
+      flex-shrink:0;
+    }
+    .step h4{margin:0;font-size:15px}
+    .step p{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    /* right column */
+    .meta{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .meta .card{
+      padding:16px;
+    }
+    .tag{display:inline-block;background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-size:13px;color:var(--muted);}
+
+    /* code */
+    pre{background:rgba(2,6,23,0.6);padding:14px;border-radius:8px;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
+    code{font-family:var(--mono);font-size:13px;color:#e6eef8;display:block;white-space:pre}
+    .code-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .copy-btn{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:var(--muted);cursor:pointer;font-size:13px;
+    }
+    .muted{color:var(--muted);font-size:13px}
+    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+    .info-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .pill{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
+    .small{font-size:13px;color:var(--muted);margin-top:6px}
+    .note{background:linear-gradient(90deg, rgba(124,58,237,0.12), rgba(6,182,212,0.08));padding:10px;border-radius:8px;color:#eaf6ff;margin-top:12px;font-size:13px}
+  </style>
 </head>
 <body>
-    <div class="c
+  <div class="wrap">
+    <header>
+      <div class="logo">SP</div>
+      <div>
+        <h1>My Sample Project</h1>
+        <p class="lead">Demonstration of building & deploying a static site using <strong>VS Code → GitHub → Webhook → Jenkins → Docker</strong>.</p>
+        <div style="margin-top:8px"><span class="badge">CI / CD • Docker • Jenkins</span></div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <main class="card">
+        <section class="hero">
+          <div style="flex:1">
+            <h2 style="margin:0 0 8px">What this project shows</h2>
+            <p class="muted">A one-page site that explains how I created and deployed this profile. The repository contains the <strong>index.html</strong> (this page) and a <strong>Dockerfile</strong>. Pushing to GitHub triggers Jenkins via a webhook which builds and deploys the image.</p>
+
+            <div class="steps" aria-hidden="false">
+              <div class="step">
+                <div class="num">1</div>
+                <div>
+                  <h4>Edit in VS Code</h4>
+                  <p>Write or update <code>index.html</code> and <code>Dockerfile</code> locally. Commit changes with Git.</p>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="num">2</div>
+                <div>
+                  <h4>Push to GitHub</h4>
+                  <p>Push to your GitHub repo (example: <span class="tag">github.com/Yugendrarepo/my-sample-website</span>). GitHub stores the source and fires a webhook on push.</p>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="num">3</div>
+                <div>
+                  <h4>Webhook triggers Jenkins</h4>
+                  <p>GitHub sends a push event to Jenkins at <code>/github-webhook/</code>. Jenkins starts the pipeline defined by the <strong>Jenkinsfile</strong> or pipeline config.</p>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="num">4</div>
+                <div>
+                  <h4>Jenkins builds Docker image</h4>
+                  <p>Jenkins checks out the repo, builds the Docker image using the <code>Dockerfile</code>, stops the old container (if any), then runs the new container.</p>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="num">5</div>
+                <div>
+                  <h4>Website updated automatically</h4>
+                  <p>Open <code>http://YOUR_SERVER_IP:8080</code> to see the latest version served by the container.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:18px 0;border-radius:2px">
+
+        <section>
+          <h3 style="margin-bottom:8px">Files included (visible in your repo)</h3>
+          <div class="info-list">
+            <div class="pill"><strong>index.html</strong> — this page (static content & instructions)</div>
+            <div class="pill"><strong>Dockerfile</strong> — contains how to serve this page with Nginx</div>
+            <div class="pill"><strong>Jenkinsfile</strong> — (optional) pipeline script for Jenkins</div>
+          </div>
+
+          <div class="note" role="note">
+            Tip: If Jenkins cannot access your machine directly, use <strong>ngrok</strong> to tunnel GitHub webhooks to your local Jenkins URL.
+          </div>
+        </section>
+
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:18px 0;border-radius:2px">
+
+        <section>
+          <h3>Quick commands</h3>
+          <p class="small">Run these in your VS Code terminal (adjust the repo URL):</p>
+
+          <div class="card" style="margin-top:10px">
+            <div class="code-header">
+              <strong>Git / push</strong>
+              <button class="copy-btn" data-target="git1">Copy</button>
+            </div>
+            <pre><code id="git1">git init
+git add .
+git commit -m "Initial commit — index + dockerfile"
+git remote add origin https://github.com/Yugendrarepo/my-sample-website.git
+git branch -M main
+git push -u origin main</code></pre>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:240px" class="card">
+              <div class="code-header">
+                <strong>Dockerfile (example)</strong>
+                <button class="copy-btn" data-target="dock1">Copy</button>
+              </div>
+              <pre><code id="dock1">FROM nginx:alpine
+RUN rm -rf /usr/share/nginx/html/*
+COPY index.html /usr/share/nginx/html/index.html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]</code></pre>
+            </div>
+
+            <div style="flex:1;min-width:240px" class="card">
+              <div class="code-header">
+                <strong>Jenkinsfile (example)</strong>
+                <button class="copy-btn" data-target="jen1">Copy</button>
+              </div>
+              <pre><code id="jen1">pipeline {
+  agent any
+  stages {
+    stage('Checkout') {
+      steps { git branch: 'main', url: 'https://github.com/Yugendrarepo/my-sample-website.git' }
+    }
+    stage('Build Image') {
+      steps { sh 'docker build -t yugendra/sample-website:latest .' }
+    }
+    stage('Deploy') {
+      steps {
+        sh '''
+          docker stop sample-container || true
+          docker rm sample-container || true
+          docker run -d --name sample-container -p 8080:80 yugendra/sample-website:latest
+        '''
+      }
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:18px 0;border-radius:2px">
+
+        <section>
+          <h3 style="margin-bottom:8px">How to view this site (locally)</h3>
+          <div class="small">Build image and run locally:</div>
+          <div class="card" style="margin-top:10px">
+            <div class="code-header">
+              <strong>Build & run</strong>
+              <button class="copy-btn" data-target="run1">Copy</button>
+            </div>
+            <pre><code id="run1">docker build -t my-sample-website .
+docker run -d -p 8080:80 my-sample-website
+# Open http://localhost:8080</code></pre>
+          </div>
+        </section>
+
+        <footer>
+          <div>Made with ❤ in VS Code — shows full CI/CD flow using GitHub webhooks, Jenkins, and Docker.</div>
+          <div style="margin-top:6px;color:var(--muted)">Replace placeholders (usernames/URLs) with your own values before running automated pipelines.</div>
+        </footer>
+      </main>
+
+      <aside class="meta">
+        <div class="card">
+          <h4 style="margin:0 0 8px">Project summary</h4>
+          <div class="muted">This page documents how the project was created and deployed. It is intentionally simple and self-contained — ideal for demos and CI/CD learning.</div>
+
+          <div style="margin-top:12px">
+            <div class="small"><strong>Repo:</strong></div>
+            <div style="margin-top:6px"><a href="https://github.com/Yugendrarepo/my-sample-website.git" target="_blank" style="color:inherit;text-decoration:none">github.com/Yugendrarepo/my-sample-website</a></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h4 style="margin:0 0 8px">Useful links</h4>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <a class="tag" href="https://docs.docker.com/" target="_blank">Docker Docs</a>
+            <a class="tag" href="https://www.jenkins.io/doc/" target="_blank">Jenkins Docs</a>
+            <a class="tag" href="https://docs.github.com/en/developers/webhooks-and-events" target="_blank">GitHub Webhooks</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Copy buttons
+    document.querySelectorAll('.copy-btn').forEach(btn=>{
+      btn.addEventListener('click', async ()=> {
+        const id = btn.getAttribute('data-target');
+        const el = document.getElementById(id);
+        if(!el) return;
+        try{
+          await navigator.clipboard.writeText(el.textContent);
+          btn.textContent = 'Copied ✓';
+          setTimeout(()=> btn.textContent = 'Copy', 1500);
+        }catch(e){
+          // fallback
+          const ta = document.createElement('textarea');
+          ta.value = el.textContent;
+          document.body.appendChild(ta);
+          ta.select();
+          try{ document.execCommand('copy'); btn.textContent = 'Copied ✓'; }catch(e){}
+          document.body.removeChild(ta);
+          setTimeout(()=> btn.textContent = 'Copy', 1500);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
