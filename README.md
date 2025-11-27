@@ -7,7 +7,7 @@ This project demonstrates a complete CI/CD pipeline using **Jenkins**, **Docker*
 ## 📦 How the Project Works
 
 ### ✔ 1. GitHub Code Push  
-Whenever you update or push code to GitHub, a **webhook** notifies Jenkins instantly.  .
+Whenever you update or push code to GitHub, a **webhook** notifies Jenkins instantly.  
 
 ### ✔ 2. Jenkins Pipeline Execution  
 Jenkins automatically:  
