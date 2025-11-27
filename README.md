@@ -1,75 +1,162 @@
-# 🚀 End-to-End CI/CD Pipeline Using Jenkins, Docker & GitHub Webhooks  
-### A Complete DevOps Automation Project for Interview Showcase
+# 🚀 My Sample DevOps Project – Fully Automated CI/CD with Jenkins, Docker & Ngrok
 
-This project demonstrates a fully automated **CI/CD pipeline** built using **Jenkins, Docker, GitHub Webhooks, and Ngrok**.  
-Whenever code is pushed to GitHub, a webhook triggers Jenkins, which automatically builds a Docker image, deploys the latest version of the website, and makes it publicly accessible.
-
-This is a perfect hands-on DevOps project to showcase in interviews.
+This project demonstrates a complete CI/CD pipeline using **Jenkins**, **Docker**, **GitHub Webhooks**, and **Ngrok** to showcase your DevOps skills during interviews.
 
 ---
 
-## 🌟 Project Overview
+## 📦 How the Project Works
 
-This project automates the entire workflow from code commit to deployment:
+### ✔ 1. GitHub Code Push  
+Whenever you update or push code to GitHub, a **webhook** notifies Jenkins instantly.
 
-1. **Git push → GitHub Webhook Trigger**  
-2. **Webhook → Jenkins Pipeline Activation**  
-3. **Jenkins → Pulls Latest Code**  
-4. **Jenkins → Builds Docker Image**  
-5. **Jenkins → Runs Updated Docker Container**  
-6. **Ngrok → Exposes Application to the Public Internet**
+### ✔ 2. Jenkins Pipeline Execution  
+Jenkins automatically:  
+- Pulls the updated code  
+- Builds a Docker image  
+- Stops the old container  
+- Deploys a new updated container  
 
-This setup reflects real-world DevOps CI/CD practices with continuous deployment.
+### ✔ 3. Stop Previous Container
+```bash
+docker stop sample-container || true
+docker rm sample-container || true
+```
 
----
+### ✔ 4. Run Updated Website Container
+```bash
+docker run -d --name sample-container -p 8080:80 sample-website
+```
 
-## ⚙️ Technology Stack
-
-| Technology | Purpose |
-|-----------|---------|
-| **HTML/CSS** | Website frontend |
-| **Docker** | Containerization |
-| **Jenkins** | CI/CD automation engine |
-| **GitHub Webhooks** | Automatic pipeline triggering |
-| **Ngrok** | Public URL tunneling |
-| **VS Code** | Code editor |
-
----
-Developer (You)
-|
-| 1. Commit & Push Code
-v
-GitHub Repository
-|
-| 2. GitHub Webhook Trigger
-v
-Jenkins Server
-|
-| 3. Pull Latest Code
-| 4. Build Docker Image
-| 5. Stop & Remove Old Container
-| 6. Run Updated Container
-v
-Docker Engine
-|
-| 7. Expose Port via Ngrok
-v
-Public URL (Accessible Anywhere)
-
+This ensures your latest website version is always live after each code change.
 
 ---
 
-## 🛠 Jenkins Pipeline Steps (Jenkinsfile Breakdown)
+## 🌐 Public Exposure Using Ngrok
 
-### ✔ 1. Checkout Source Code  
-Jenkins fetches the latest version from the GitHub repo.
+Run this command to make the site visible anywhere:
 
-### ✔ 2. Build Docker Image
-```sh
+```bash
+ngrok http 8080
+```
+
+Ngrok gives a URL like:
+
+```
+https://xxxx-xxxx.ngrok-free.dev
+```
+
+Share it with:  
+- Recruiters  
+- Interviewers  
+- Friends  
+- Teammates  
+
+---
+
+## 🎯 Why This Project Is Perfect for Interviews
+
+This project shows real DevOps hands-on experience:
+
+✔ Continuous Integration  
+✔ Continuous Deployment  
+✔ Jenkins pipeline setup  
+✔ Docker containerization  
+✔ GitHub Webhook automation  
+✔ Real-time updates  
+✔ Deployment orchestration  
+✔ Building & managing Docker images  
+✔ Using Ngrok for public demo  
+
+---
+
+## 💡 Key Highlights to Mention in Interviews
+
+- Built a fully automated CI/CD pipeline using Jenkins  
+- Configured GitHub Webhooks for automatic job triggering  
+- Created Docker images on every code change  
+- Automated container lifecycle management  
+- Made the website publicly accessible using Ngrok  
+- End-to-end DevOps workflow using real tools  
+
+---
+
+## 🧪 Sample Jenkinsfile (Reference)
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Yugendrarepo/my-sample-website'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t sample-website .'
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
+                sh 'docker stop sample-container || true'
+                sh 'docker rm sample-container || true'
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                sh 'docker run -d --name sample-container -p 8080:80 sample-website'
+            }
+        }
+    }
+}
+```
+
+---
+
+## 🛳 Sample Dockerfile (Reference)
+
+```dockerfile
+FROM nginx:alpine
+COPY index.html /usr/share/nginx/html/index.html
+```
+
+---
+
+## 👨‍💻 How to Run Locally
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Yugendrarepo/my-sample-website
+```
+
+### 2. Build the Docker Image
+```bash
 docker build -t sample-website .
+```
 
+### 3. Run the Docker Container
+```bash
+docker run -d --name sample-container -p 8080:80 sample-website
+```
 
-**###✔ 3. Stop & Remove Previous Container**
+### 4. Open in Browser
+```
+http://localhost:8080
+```
 
-## 📂 Project Structure
+### 5. (Optional) Expose Publicly Using Ngrok
+```bash
+ngrok http 8080
+```
 
+---
+
+## 🖋 Author  
+**Yugendra Prasad**  
+DevOps Engineer  
+
+GitHub: https://github.com/Yugendrarepo
