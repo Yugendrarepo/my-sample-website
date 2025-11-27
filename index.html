@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Yugendra's Sample Project — Jenkins + Webhook + Docker (Interview Demo)</title>
+  <title>Yugendra's Sample Project — Jenkins + Webhook + Docker</title>
 
   <style>
     :root{
@@ -12,163 +12,95 @@
       --accent: #7c3aed;
       --accent-2: #06b6d4;
       --card: rgba(255,255,255,0.06);
-      --glass: rgba(255,255,255,0.04);
       --muted: rgba(255,255,255,0.75);
-      --mono: "Courier New", monospace;
-      --radius: 12px;
-      --container-max: 1100px;
+      --radius: 14px;
     }
+
     *{box-sizing:border-box}
+
     body{
       margin:0;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       background: linear-gradient(180deg, var(--bg1), var(--bg2));
       color:#e6eef8;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      line-height:1.45;
-      min-height:100vh;
+      line-height:1.55;
     }
 
     .wrap{
-      max-width:var(--container-max);
-      margin:36px auto;
-      padding:28px;
+      max-width:1100px;
+      margin:40px auto;
+      padding:24px;
     }
 
     header{
       display:flex;
       gap:20px;
-      align-items:flex-start;
-      margin-bottom:20px;
+      align-items:center;
+      margin-bottom:24px;
     }
 
     .logo{
       width:72px;
       height:72px;
-      border-radius:14px;
+      border-radius:var(--radius);
       background:linear-gradient(135deg,var(--accent),var(--accent-2));
       display:flex;
       align-items:center;
       justify-content:center;
       font-weight:700;
       color:white;
-      box-shadow:0 8px 30px rgba(12,12,40,0.6);
-      flex-shrink:0;
       font-size:22px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.5);
     }
 
-    h1{font-size:28px;margin:0}
-    p.lead{margin:6px 0 0;color:var(--muted);font-size:14px}
-    .sub { color: var(--muted); font-size:13px; margin-top:6px; }
+    h1{margin:0;font-size:28px;font-weight:700}
+
+    p.lead{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
 
     .badge{
-      background: rgba(255,255,255,0.06);
-      padding:5px 10px;
+      background:rgba(255,255,255,0.06);
+      padding:6px 10px;
       border-radius:8px;
       font-size:12px;
-      color:#fff;
-      border:1px solid rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.04);
       margin-right:8px;
-      display:inline-block;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 360px;
-      gap:22px;
-      margin-top:22px;
-    }
-
-    @media (max-width:980px){
-      .grid{grid-template-columns: 1fr}
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      background:rgba(255,255,255,0.03);
       padding:22px;
       border-radius:var(--radius);
-      box-shadow:0 8px 30px rgba(2,6,23,0.6);
-      border:1px solid rgba(255,255,255,0.03);
-      margin-bottom:16px;
+      margin-bottom:20px;
+      border:1px solid rgba(255,255,255,0.05);
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
     }
 
     .section-title{
       font-size:18px;
-      margin-top:6px;
-      margin-bottom:12px;
       font-weight:600;
-      display:flex;
-      align-items:center;
-      gap:10px;
+      margin-bottom:12px;
       border-left:4px solid var(--accent);
       padding-left:10px;
     }
 
     .code{
-      background:rgba(255,255,255,0.06);
+      background:rgba(255,255,255,0.07);
       padding:14px;
       border-radius:10px;
-      font-family:var(--mono);
+      font-family:Courier, monospace;
       font-size:13px;
-      overflow-x:auto;
       white-space:pre;
-      border:1px solid rgba(255,255,255,0.04);
-      color:#eaf2ff;
+      overflow-x:auto;
       margin-top:8px;
+      border:1px solid rgba(255,255,255,0.05);
     }
 
-    .small {
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .flow {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-    .flow .step {
-      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-      padding:12px;
-      border-radius:10px;
-      flex:1 1 150px;
-      text-align:center;
-      border:1px solid rgba(255,255,255,0.03);
-      font-weight:600;
-    }
-    .flow .arrow { width:28px; text-align:center; color:var(--muted); }
-
-    aside .meta-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-bottom:12px;
-    }
-    .meta-row strong{display:block}
-
-    footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
-
-    @media (max-width:600px){
-      .wrap{padding:18px; margin:18px auto;}
-      .logo{width:60px;height:60px;font-size:18px}
-      h1{font-size:22px}
-      .badge{font-size:11px;padding:4px 8px}
-      .card{padding:16px}
-      .section-title{font-size:16px}
-      .flow .step{flex:1 1 100%}
-      .flow .arrow{display:none}
-      .code{font-size:12px}
-    }
-
-    ul{padding-left:18px}
-    .muted{color:var(--muted)}
-    .center{display:flex;align-items:center;justify-content:center}
-    .link { color: #bfefff; text-decoration:underline; }
-    .kbd { background:rgba(255,255,255,0.04); padding:4px 8px; border-radius:6px; font-family:var(--mono); font-size:13px; border:1px solid rgba(255,255,255,0.03); }
+    ul{padding-left:20px}
+    footer{text-align:center;margin-top:20px;color:var(--muted);font-size:13px}
   </style>
 </head>
 
@@ -178,219 +110,76 @@
     <!-- Header -->
     <header>
       <div class="logo">SP</div>
-      <div style="flex:1">
-        <h1>Yugendra's Interview Project — CI/CD Demo</h1>
-        <p class="lead">A simple, professional demonstration of a CI/CD pipeline using <strong>Jenkins, Docker, GitHub Webhooks, and Ngrok</strong>.</p>
-        <p class="sub">This is a compact interview-ready project built by <strong>Yugendra Prasad</strong> to showcase practical DevOps skills.</p>
-        <div style="margin-top:10px">
-          <span class="badge">Interview Project</span>
-          <span class="badge">CI / CD</span>
+      <div>
+        <h1>Yugendra's Sample Project</h1>
+        <p class="lead">Demonstration of building & deploying a static site using <strong>VS Code → GitHub → Webhook → Jenkins → Docker</strong>.</p>
+        <p class="lead">Created by <strong>Yugendra Prasad</strong></p>
+        <div style="margin-top:8px">
+          <span class="badge">CI/CD</span>
           <span class="badge">Jenkins</span>
           <span class="badge">Docker</span>
+          <span class="badge">Webhook</span>
         </div>
       </div>
     </header>
 
-    <div class="grid">
+    <!-- What this project shows -->
+    <div class="card">
+      <div class="section-title">What this project shows</div>
+      <p>
+        A one-page site that explains how I created and deployed this project.  
+        The repository contains the <strong>index.html</strong> (this page) and a <strong>Dockerfile</strong>.
+        Pushing to GitHub triggers Jenkins via a webhook, which builds and deploys the image.
+      </p>
 
-      <!-- Main column -->
-      <main>
-
-        <!-- Intro -->
-        <div class="card">
-          <div class="section-title">✨ About this Project</div>
-          <p class="small muted">
-            A deliberately simple project that demonstrates the complete lifecycle: 
-            <strong>code commit → GitHub webhook → Jenkins pipeline → Docker build & deploy → public demo (ngrok)</strong>.
-            The website runs on host port <strong>8081</strong> (Jenkins is on <strong>8080</strong>).
-          </p>
-          <p class="small muted" style="margin-top:10px">
-            Use this page during interviews to walk the interviewer through a real hands-on pipeline you built.
-          </p>
-        </div>
-
-        <!-- CI/CD Section (detailed) -->
-        <div class="card">
-          <div class="section-title">🚀 End-to-End CI/CD Process (Simple & Clear)</div>
-
-          <p class="small muted">
-            This is the exact flow you should describe in an interview — short, concrete, and repeatable.
-          </p>
-
-          <h4 style="margin-top:12px">1. Developer commits & pushes to GitHub</h4>
-          <div class="small muted">Typical commands used locally:</div>
-          <div class="code">
-git add .
-git commit -m "update website"
-git push origin main
-          </div>
-
-          <h4 style="margin-top:12px">2. GitHub sends a webhook to Jenkins</h4>
-          <div class="small muted">Webhook target (Jenkins listens on <strong>8080</strong>):</div>
-          <div class="code">
-http://&lt;jenkins-host&gt;:8080/github-webhook/
-          </div>
-
-          <h4 style="margin-top:12px">3. Jenkins pipeline runs</h4>
-          <div class="small muted">Pipeline actions:</div>
-          <ul>
-            <li>Checkout latest code from repository</li>
-            <li>Build Docker image from the project Dockerfile</li>
-            <li>Stop & remove previous container (if exists)</li>
-            <li>Run new container mapping host <strong>8081 → container 80</strong></li>
-          </ul>
-
-          <div style="margin-top:10px" class="small muted">Jenkinsfile (copy/paste friendly):</div>
-          <div class="code">
-pipeline {
-  agent any
-
-  stages {
-    stage('Checkout') {
-      steps {
-        git branch: 'main', url: 'https://github.com/Yugendrarepo/my-sample-website'
-      }
-    }
-
-    stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t sample-website .'
-      }
-    }
-
-    stage('Stop Old Container') {
-      steps {
-        sh 'docker stop sample-container || true'
-        sh 'docker rm sample-container || true'
-      }
-    }
-
-    stage('Run New Container') {
-      steps {
-        sh 'docker run -d --name sample-container -p 8081:80 sample-website'
-      }
-    }
-  }
-
-  post {
-    success { echo 'Deployment successful — site available on port 8081' }
-    failure { echo 'Pipeline failed — check logs' }
-  }
-}
-          </div>
-
-          <h4 style="margin-top:12px">4. Dockerfile (project)</h4>
-          <div class="small muted">Minimal Dockerfile that serves your static site:</div>
-          <div class="code">
-FROM nginx:alpine
-COPY index.html /usr/share/nginx/html/index.html
-          </div>
-
-          <h4 style="margin-top:12px">5. Ngrok for demo (public exposure)</h4>
-          <div class="small muted">Expose host port <strong>8081</strong> for public demo:</div>
-          <div class="code">
-ngrok http 8081
-# use the generated https://xxxx-xxxx.ngrok-free.dev URL to share
-          </div>
-
-          <h4 style="margin-top:12px">Quick verification</h4>
-          <div class="code">
-# Check container is running
-docker ps
-
-# View container logs
-docker logs -f sample-container
-
-# Verify locally
-curl http://localhost:8081
-          </div>
-
-          <div class="flow" aria-hidden="true">
-            <div class="step">Git Commit</div>
-            <div class="arrow">→</div>
-            <div class="step">GitHub Webhook</div>
-            <div class="arrow">→</div>
-            <div class="step">Jenkins Pipeline (8080)</div>
-            <div class="arrow">→</div>
-            <div class="step">Docker Build</div>
-            <div class="arrow">→</div>
-            <div class="step">Docker Run (8081)</div>
-            <div class="arrow">→</div>
-            <div class="step">Ngrok Public URL</div>
-          </div>
-        </div>
-
-        <!-- Interview tips -->
-        <div class="card">
-          <div class="section-title">💡 Interview Talking Points (Say this in the interview)</div>
-          <ul>
-            <li><strong>What I built:</strong> A simple CI/CD demo to show automated build & deploy using Jenkins and Docker.</li>
-            <li><strong>Why:</strong> To demonstrate automation, reproducibility, and the ability to present a live demo quickly.</li>
-            <li><strong>How it helps:</strong> Shows understanding of webhooks, pipeline-as-code, container lifecycle, and public demo strategy.</li>
-            <li><strong>Keep it short:</strong> “I push code → GitHub triggers Jenkins → Jenkins builds a Docker image and deploys it → I expose it with Ngrok for demos.”</li>
-            <li><strong>Extra credit:</strong> Mention tagging images with commit SHA, pushing to registry, and cleaning up images in a real production setup.</li>
-          </ul>
-        </div>
-
-        <!-- Troubleshooting -->
-        <div class="card">
-          <div class="section-title">🛟 Troubleshooting (common issues)</div>
-          <ul>
-            <li><strong>Webhook not firing:</strong> Check GitHub webhook delivery logs and Jenkins endpoint reachability (firewall/ngrok).</li>
-            <li><strong>Jenkins can't run docker:</strong> Add Jenkins user to <code class="kbd">docker</code> group or run docker with sudo.</li>
-            <li><strong>Port conflict:</strong> Jenkins uses 8080, site uses 8081. Change mapping if needed.</li>
-            <li><strong>Ngrok 502/404:</strong> Ensure the container responds locally at <code class="kbd">http://localhost:8081</code>.</li>
-          </ul>
-        </div>
-
-        <!-- Closing note -->
-        <div class="card">
-          <div class="section-title">✅ Final Note</div>
-          <p class="small muted">
-            This is a simple, interview-focused demo created by <strong>Yugendra Prasad</strong>. It is intentionally minimal so you can explain every step clearly during a conversation.
-            If you'd like, I can also generate a concise one-page slide (PDF) or a README.md you can include in the repo.
-          </p>
-        </div>
-
-      </main>
-
-      <!-- Right column -->
-      <aside>
-        <div class="card">
-          <div class="section-title">📄 Quick Repo Info</div>
-          <div class="small muted">
-            <div style="margin-bottom:8px"><strong>Repo:</strong> <a class="link" href="https://github.com/Yugendrarepo/my-sample-website" target="_blank" rel="noopener">github.com/Yugendrarepo/my-sample-website</a></div>
-            <div style="margin-bottom:8px"><strong>Run locally:</strong> <code class="kbd">docker build -t sample-website . &amp;&amp; docker run -d --name sample-container -p 8081:80 sample-website</code></div>
-            <div style="margin-top:8px" class="small muted">Jenkins runs on <strong>8080</strong>, website on <strong>8081</strong>.</div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-          <div class="section-title">📞 Author</div>
-          <div class="small muted">
-            <strong>Yugendra Prasad</strong><br>
-            DevOps Engineer<br>
-            <a class="link" href="https://github.com/Yugendrarepo" target="_blank" rel="noopener">github.com/Yugendrarepo</a>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-          <div class="section-title">❓ Need extras?</div>
-          <div class="small muted">
-            I can add:
-            <ul>
-              <li>One-page PDF slide for interviews</li>
-              <li>Copy-to-clipboard buttons for code blocks</li>
-              <li>Automatic commit-SHA tagging in Jenkinsfile</li>
-            </ul>
-          </div>
-        </div>
-      </aside>
-
+      <ol>
+        <li><strong>Edit in VS Code</strong>  
+          Write or update <code>index.html</code> and <code>Dockerfile</code> locally.  
+          Commit changes with Git.
+        </li>
+        <br>
+        <li><strong>Push to GitHub</strong><br>
+          GitHub stores the code and fires a webhook event on push.
+        </li>
+        <br>
+        <li><strong>Webhook triggers Jenkins</strong><br>
+          Jenkins starts the pipeline using the Jenkinsfile or pipeline config.
+        </li>
+        <br>
+        <li><strong>Jenkins builds Docker image</strong><br>
+          Jenkins runs <code>docker build</code> to generate a new website image.
+        </li>
+        <br>
+        <li><strong>Jenkins deploys container</strong><br>
+          The old container is removed and the new one runs on port <strong>8081</strong>.
+        </li>
+      </ol>
     </div>
 
+    <!-- Repo Links -->
+    <div class="card">
+      <div class="section-title">Project Summary</div>
+
+      <p>This page documents how the project was created and deployed.  
+      It is intentionally simple and self-contained — ideal for CI/CD learning and interviews.</p>
+
+      <p><strong>Repo:</strong><br>
+        <a href="https://github.com/Yugendrarepo/my-sample-website" style="color:#b0eaff">
+          github.com/Yugendrarepo/my-sample-website
+        </a>
+      </p>
+
+      <div class="section-title" style="margin-top:20px;">Useful Links</div>
+      <ul>
+        <li><a href="https://docs.docker.com" style="color:#b0eaff">Docker Docs</a></li>
+        <li><a href="https://www.jenkins.io/doc" style="color:#b0eaff">Jenkins Docs</a></li>
+        <li><a href="https://docs.github.com/en/webhooks" style="color:#b0eaff">GitHub Webhooks</a></li>
+      </ul>
+    </div>
+
+    <!-- Footer -->
     <footer>
-      © 2025 • Interview demo by <strong>Yugendra Prasad</strong>
+      © 2025 — Built for CI/CD demo by <strong>Yugendra Prasad</strong>
     </footer>
 
   </div>
